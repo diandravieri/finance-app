@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/authMiddleware');
 const {
   getFinances,
   createFinance,
@@ -8,18 +7,14 @@ const {
   deleteFinance,
   getFinanceSummary,
   filterFinance,
+  getCategoryStats,
 } = require('../controllers/financeController');
+const { protect } = require('../middleware/authMiddleware');
 
-router.get('/', protect, getFinances);
-
-router.post('/', protect, createFinance);
-
-router.put('/:id', protect, updateFinance);
-
-router.delete('/:id', protect, deleteFinance);
-
+router.route('/').get(protect, getFinances).post(protect, createFinance);
+router.route('/:id').put(protect, updateFinance).delete(protect, deleteFinance);
 router.get('/summary', protect, getFinanceSummary);
-
 router.get('/filter', protect, filterFinance);
+router.get('/category-stats', protect, getCategoryStats);
 
 module.exports = router;
