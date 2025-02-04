@@ -6,7 +6,8 @@ const {
   createFinance,
   updateFinance,
   deleteFinance,
-  financeReport,
+  getFinanceSummary,
+  filterFinance,
 } = require('../controllers/financeController');
 
 router.get('/', protect, getFinances);
@@ -17,6 +18,8 @@ router.put('/:id', protect, updateFinance);
 
 router.delete('/:id', protect, deleteFinance);
 
-router.get('/report', protect, financeReport);
+router.get('/summary', protect, getFinanceSummary);
+
+router.get('/filter', protect, filterFinance);
 
 module.exports = router;
