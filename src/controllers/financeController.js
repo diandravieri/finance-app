@@ -150,5 +150,22 @@ const getFinanceSummary = async (req, res) => {
 };
 
 
+const getCategoryStats = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const finances = await Finance.find({ user: userId });
+    const categoryStats = finances.reduce((acc, curr) => {
+      if (!acc[curr.category]) {
+        acc[curr.category] = { total: 0, count: 0 };
+      }
+      acc[curr.category].total += curr.amount;
+      acc[curr.category].count += 1;
+      return acc;
+    }, {});
+    res.status(200).json(categoryStats);
+  } catch (error) {
+    res.status(500).json({ message: 'Gagal mendapatkan statistik kategori' });
+  }
+};
 
-module.exports = { getFinances, createFinance, updateFinance, deleteFinance,financeReport ,filterFinance,getFinanceSummary};
+module.exports = { getFinances, createFinance, updateFinance, deleteFinance,financeReport ,filterFinance,getFinanceSummary,getCategoryStats};
