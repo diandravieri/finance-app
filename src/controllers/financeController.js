@@ -80,4 +80,38 @@ const financeReport = async (req, res) => {
   }
 }
 
-module.exports = { getFinances, createFinance, updateFinance, deleteFinance,financeReport };
+const filterFinance = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { type, month, year } = req.query; 
+    let query = { user: userId };
+    if (type) {
+      query.type = type; 
+    }
+    if (year) {
+      const startOfYear = new Date(`${year}-01-01T00:00:00.000Z`);
+      const endOfYear = new Date(`${Number(year) + 1}-01-01T00:00:00.000Z`);
+      query.createdAt = { $gte: startOfYear, $lt: endOfYear };
+    }
+
+    if (month) {
+      if (!query.createdAt) {
+        query.createdAt = {};
+      }
+      const yearValue = year || new Date().getFullYear(); 
+      const monthStart = new Date(`${yearValue}-${String(month).padStart(2, '0')}-01T00:00:00.000Z`);
+      const nextMonth = Number(month) + 1;
+      const monthEnd = nextMonth > 12
+        ? new Date(`${Number(yearValue) + 1}-01-01T00:00:00.000Z`)
+        : new Date(`${yearValue}-${String(nextMonth).padStart(2, '0')}-01T00:00:00.000Z`);
+      query.createdAt.$gte = monthStart;
+      query.createdAt.$lt = monthEnd;
+    }
+    const finances = await Finance.find(query).sort({ createdAt: -1 });
+    res.status(200).json(finances);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getFinances, createFinance, updateFinance, deleteFinance,financeReport ,filterFinance };
