@@ -1,29 +1,33 @@
 const mongoose = require('mongoose');
-
 const financeSchema = mongoose.Schema(
   {
     user: {
-      type: mongoose.Schema.Types.ObjectId, 
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       ref: 'User',
     },
     title: {
       type: String,
-      required: [true, 'Judul diperlukan'],
+      required: true,
     },
     amount: {
       type: Number,
-      required: [true, 'Jumlah diperlukan'],
+      required: true,
     },
     type: {
       type: String,
-      required: [true, 'Tipe diperlukan'],
+      required: true,
       enum: ['income', 'expense'],
+    },
+    category: {
+      type: String,
+      required: true,
+      enum: ['salary', 'education', 'health', 'food', 'transportation', 'entertainment', 'utilities', 'others'], 
     },
   },
   {
     timestamps: true,
   }
 );
-const Finance = mongoose.model('Finance', financeSchema);
-module.exports = Finance;
+
+module.exports = mongoose.model('Finance', financeSchema);
