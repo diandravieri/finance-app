@@ -114,4 +114,28 @@ const filterFinance = async (req, res) => {
   }
 };
 
-module.exports = { getFinances, createFinance, updateFinance, deleteFinance,financeReport ,filterFinance };
+const getFinanceSummary = async (req, res) => {
+  try {
+      const userId = req.user._id;
+      const finances = await Finance.find({ user: userId });
+      const totalIncome = finances
+          .filter((item) => item.type === 'income')
+          .reduce((acc, curr) => acc + curr.amount, 0);
+
+      const totalExpense = finances
+          .filter((item) => item.type === 'expense')
+          .reduce((acc, curr) => acc + curr.amount, 0);
+
+      const balance = totalIncome - totalExpense;
+
+      res.status(200).json({
+          totalIncome,
+          totalExpense,
+          balance,
+      });
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { getFinances, createFinance, updateFinance, deleteFinance,financeReport ,filterFinance,getFinanceSummary};
